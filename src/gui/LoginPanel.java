@@ -109,7 +109,7 @@ public class LoginPanel extends JPanel{
     			JButton source = (JButton) event.getSource();
     			
     			if (source == LoginPanel.this.buttonLogin) {
-    				
+    				//check login then swap to query panel
     			}
     		}
     	};   	

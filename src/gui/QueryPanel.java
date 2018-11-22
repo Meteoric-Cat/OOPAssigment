@@ -25,7 +25,7 @@ public class QueryPanel extends JPanel implements Restorable{
     private JButton buttonCreate;
     private JLabel label1;
     private JLabel label2;
-    private JLabel labelQueryResult;
+    private JLabel labelQueryTime;
     private JScrollPane scrollPanelResult;
     private JTable tableResult;
     private DefaultTableModel tableResultModel;
@@ -54,6 +54,10 @@ public class QueryPanel extends JPanel implements Restorable{
     
     	this.label1 = new JLabel("Query:");
     	this.label1.setFont(fontLabel);
+    	this.label2 = new JLabel("Time (seconds):");
+    	this.label2.setFont(fontLabel);
+    	this.labelQueryTime = new JLabel("0");
+    	this.labelQueryTime.setFont(fontLabel);
     	
     	this.tfieldQuery = new JTextField();
     	this.tfieldQuery.setFont(fontField);
@@ -82,6 +86,10 @@ public class QueryPanel extends JPanel implements Restorable{
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                         .addComponent(buttonCreate, javax.swing.GroupLayout.PREFERRED_SIZE, 93, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                        .addComponent(label2)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(labelQueryTime)
+                        .addGap(149, 149, 149)
                         .addComponent(buttonStatistics)
                         .addGap(24, 24, 24)
                         .addComponent(buttonClear, javax.swing.GroupLayout.PREFERRED_SIZE, 93, javax.swing.GroupLayout.PREFERRED_SIZE))
@@ -109,9 +117,11 @@ public class QueryPanel extends JPanel implements Restorable{
                     .addComponent(buttonStatistics)
                     .addComponent(buttonClear)
                     .addComponent(buttonLogout)
-                    .addComponent(buttonCreate))
+                    .addComponent(buttonCreate)
+                    .addComponent(label2)
+                    .addComponent(labelQueryTime))
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-        );    	
+        );
     }
     
     private void initListeners() {

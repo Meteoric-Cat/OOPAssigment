@@ -23,7 +23,7 @@ public class MainFrame extends JFrame{
 		
 		this.setDefaultCloseOperation(EXIT_ON_CLOSE);
 		this.setSize(WIDTH, HEIGHT);
-		this.setName(APPLICATION_NAME);
+		this.setTitle(APPLICATION_NAME);
 		this.setResizable(false);
 		
 		this.currentPanelId = NO_PANEL;
@@ -89,7 +89,11 @@ public class MainFrame extends JFrame{
 		//enable new panel
 		currentPanel = this.getPanelById(id);
 		this.enablePanel(currentPanel);
-		this.mainPanel.add(currentPanel);
+		if (currentPanel instanceof Restorable) {
+			((Restorable)currentPanel).restoreState();
+		}
+		
+		this.mainPanel.add(currentPanel);		
 		currentPanel.setBounds(0, 0, WIDTH, HEIGHT);
 	}
 	
