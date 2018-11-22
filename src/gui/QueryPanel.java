@@ -2,6 +2,8 @@ package gui;
 
 import java.awt.Dimension;
 import java.awt.Font;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 
 import javax.swing.JButton;
 import javax.swing.JLabel;
@@ -11,7 +13,7 @@ import javax.swing.JTable;
 import javax.swing.JTextField;
 import javax.swing.table.DefaultTableModel;
 
-public class QueryPanel extends JPanel{
+public class QueryPanel extends JPanel implements Restorable{
 	private Font fontButton = new Font("Tahoma", 0, 18);
 	private Font fontLabel = new Font("Tahoma", 0, 18);
 	private Font fontField = new Font("Tahoma", 0, 18);
@@ -22,14 +24,20 @@ public class QueryPanel extends JPanel{
     private JButton buttonLogout;
     private JButton buttonCreate;
     private JLabel label1;
+    private JLabel label2;
+    private JLabel labelQueryResult;
     private JScrollPane scrollPanelResult;
     private JTable tableResult;
     private DefaultTableModel tableResultModel;
     private JTextField tfieldQuery;
     
+    private MouseAdapter mAdapterButton;
+    
     public QueryPanel() {
     	this.initComponents();
     	this.arrangeComponents();
+    	this.initListeners();
+    	this.addListeners();
     }
 
     private void initComponents() {
@@ -104,5 +112,43 @@ public class QueryPanel extends JPanel{
                     .addComponent(buttonCreate))
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );    	
+    }
+    
+    private void initListeners() {
+    	this.mAdapterButton = new MouseAdapter() {
+    		@Override
+    		public void mouseClicked(MouseEvent event) {
+    			JButton source = (JButton) event.getSource();
+    			
+    			if (source == QueryPanel.this.buttonSend) {
+    				
+    			} 
+    			if (source == QueryPanel.this.buttonLogout) {
+    				//close current driver
+    				
+    				MainFrame.getInstance().showPanel(MainFrame.PanelId.LOGIN_PANEL);    				
+    			}
+    			if (source == QueryPanel.this.buttonCreate) {    				
+    				MainFrame.getInstance().showPanel(MainFrame.PanelId.CREATE_PANEL);    				
+    			}
+    			if (source == QueryPanel.this.buttonClear) {
+    				QueryPanel.this.restoreState();
+    			}
+    			if (source == QueryPanel.this.buttonStatistics) {    				
+    			}
+    		}    		
+    	};
+    }   
+    
+    public void addListeners() {
+    	this.buttonSend.addMouseListener(this.mAdapterButton);
+    	this.buttonClear.addMouseListener(this.mAdapterButton);
+    	this.buttonStatistics.addMouseListener(this.mAdapterButton);
+    	this.buttonLogout.addMouseListener(this.mAdapterButton);
+    	this.buttonCreate.addMouseListener(this.mAdapterButton);
+    }
+    
+    public void restoreState() {
+    	
     }
 }

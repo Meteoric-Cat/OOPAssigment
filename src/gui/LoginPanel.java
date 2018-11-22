@@ -1,6 +1,8 @@
 package gui;
 
 import java.awt.Font;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 
 import javax.swing.GroupLayout;
 import javax.swing.JButton;
@@ -22,9 +24,13 @@ public class LoginPanel extends JPanel{
     private JPasswordField pfieldPassword;
     private JTextField tfieldAccount;
 
+    private MouseAdapter mAdapterButton;
+    
     public LoginPanel() {
     	this.initComponents();
     	this.arrangeComponents();
+    	this.initListeners();
+    	this.addListeners();
     }
     
     private void initComponents() {
@@ -94,5 +100,22 @@ public class LoginPanel extends JPanel{
                 .addComponent(buttonLogin)
                 .addContainerGap(281, Short.MAX_VALUE))
         );    	
+    }
+    
+    private void initListeners() {
+    	this.mAdapterButton = new MouseAdapter() {
+    		@Override
+    		public void mouseClicked(MouseEvent event) {
+    			JButton source = (JButton) event.getSource();
+    			
+    			if (source == LoginPanel.this.buttonLogin) {
+    				
+    			}
+    		}
+    	};   	
+    }
+    
+    private void addListeners() {
+    	this.buttonLogin.addMouseListener(this.mAdapterButton);
     }
 }

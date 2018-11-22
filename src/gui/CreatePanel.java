@@ -15,7 +15,7 @@ import javax.swing.JTextField;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 
-public class CreatePanel extends JPanel{
+public class CreatePanel extends JPanel implements Restorable{
 	private final int MIN_NUMBER = 0;
 	private final int MAX_NUMBER = 10000;
 	private final int MIN_DAY = 1;
@@ -85,6 +85,7 @@ public class CreatePanel extends JPanel{
     	this.initComponents();
     	this.arrangeComponents();
     	this.initListeners();
+    	this.addListeners();
     }
     
     private void initComponents() {
@@ -536,5 +537,25 @@ public class CreatePanel extends JPanel{
     	value = Math.max(minValue, value);
     	value = Math.min(maxValue, value);
     	spinner.setValue(value);
+    }
+    
+    public void addListeners() {
+    	this.buttonECreate.addMouseListener(this.mAdapterButton);
+    	this.buttonEDelete.addMouseListener(this.mAdapterButton);
+    	this.buttonRCreate.addMouseListener(this.mAdapterButton);
+    	this.buttonRDelete.addMouseListener(this.mAdapterButton);
+    	this.buttonQuery.addMouseListener(this.mAdapterButton);
+    	this.buttonLogout.addMouseListener(this.mAdapterButton);
+    	
+    	this.spinnerDay.addChangeListener(this.cListenerSpinner);
+    	this.spinnerMonth.addChangeListener(this.cListenerSpinner);
+    	this.spinnerYear.addChangeListener(this.cListenerSpinner);
+    	this.spinnerE1Number.addChangeListener(this.cListenerSpinner);
+    	this.spinnerE2Number.addChangeListener(this.cListenerSpinner);
+    	this.spinnerENumber.addChangeListener(this.cListenerSpinner);
+    }
+    
+    public void restoreState() {
+    	
     }
 }
