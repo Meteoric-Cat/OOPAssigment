@@ -149,6 +149,11 @@ public class QueryPanel extends JPanel implements Restorable{
     }
     
     public void restoreState() {
+    	this.tfieldQuery.setText("");
     	
+    	this.tableResultModel.setRowCount(0);
+    	this.tableResultModel.setColumnCount(0);
+    	this.tableResult.revalidate();
+    	this.tableResult.repaint();
     }
 }

@@ -556,6 +556,22 @@ public class CreatePanel extends JPanel implements Restorable{
     }
     
     public void restoreState() {
+    	String initialFieldValue = "";
+    	int initialSpinnerValue = 1;
     	
+    	this.tfieldDiscription.setText(initialFieldValue);
+    	this.tfieldIdentifier.setText(initialFieldValue);
+    	this.tfieldLabel.setText(initialFieldValue);
+    	this.tfieldLink.setText(initialFieldValue);
+    	this.spinnerENumber.setValue(initialSpinnerValue);
+    	this.spinnerDay.setValue(initialSpinnerValue);
+    	this.spinnerMonth.setValue(initialSpinnerValue);
+    	this.spinnerYear.setValue(initialSpinnerValue);
+    	
+    	this.tfieldE1Identifier.setText(initialFieldValue);
+    	this.tfieldE2Identifier.setText(initialFieldValue);
+    	this.tfieldRelationship.setText(initialFieldValue);
+    	this.spinnerE1Number.setValue(initialSpinnerValue);
+    	this.spinnerE2Number.setValue(initialSpinnerValue);
     }
 }
