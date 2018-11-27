@@ -1,5 +1,5 @@
 package model.business;
 
-public class Query {
+abstract class Query {
 
 }
