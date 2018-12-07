@@ -17,7 +17,7 @@ public class EntityRelationShipManager {
 	public int getCountryAmount() {
 		return countryAmount;
 	}
-	public int getRelatrionshipAmount() {
+	public int getRelationshipAmount() {
 		return relationshipAmount;
 	}
 	public int getEventAmount() {

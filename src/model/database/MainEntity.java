@@ -7,6 +7,13 @@ abstract class MainEntity {
 	private String description;
 	private Origin origin;
 	
+	public MainEntity(String type, String identifier, String label, String description, Origin origin) {
+        setType(type);
+        setIdentifier(identifier);
+        setLabel(label);
+        setDescription(description);
+        setOrigin(origin);
+    }
 	// setters
 	public String getType() {
 		return this.type;
@@ -39,5 +46,4 @@ abstract class MainEntity {
 	public void setOrigin(Origin origin) {
 		this.origin = origin;
 	}
-	
 }
