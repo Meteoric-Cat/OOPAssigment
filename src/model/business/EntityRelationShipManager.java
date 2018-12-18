@@ -8,6 +8,7 @@ public class EntityRelationShipManager {
 	private int locationAmount = 0;
 	private int relationshipAmount = 0;
 	
+	// getters
 	public int getPersonAmount() {
 		return personAmount;
 	}
@@ -27,42 +28,23 @@ public class EntityRelationShipManager {
 		return locationAmount;
 	}
 	
-	
-	public void increasePersonAmount() {
-		this.personAmount++;
+	// setters
+	public void setPersonAmount(int quantity) {
+		this.personAmount += quantity;
 	}
-	public void increaseOrganizationAmount() {
-		this.organizationAmount++;
+	public void setOrganizationAmount(int quantity) {
+		this.organizationAmount += quantity;
 	}
-	public void increaseCountryAmount() {
-		this.countryAmount++;
+	public void setCountryAmount(int quantity) {
+		this.countryAmount += quantity;
 	}
-	public void increaseLocationAmount() {
-		this.locationAmount++;
+	public void setRelationshipAmount(int quantity) {
+		this.relationshipAmount += quantity;
 	}
-	public void increaseEventAmount() {
-		this.eventAmount++;
+	public void setEventAmount(int quantity) {
+		this.eventAmount += quantity;
 	}
-	public void increaseRelationshipAmount() {
-		this.relationshipAmount++;
-	}
-	
-	public void decreasePersonAmount() {
-		this.personAmount--;
-	}
-	public void decreaseOrganizationAmount() {
-		this.organizationAmount--;
-	}
-	public void decreaseCountryAmount() {
-		this.countryAmount--;
-	}
-	public void decreaseLocationAmount() {
-		this.locationAmount--;
-	}
-	public void decreaseEventAmount() {
-		this.eventAmount--;
-	}
-	public void decreaseRelationshipAmount() {
-		this.relationshipAmount--;
+	public void setLocationAmount(int quantity) {
+		this.locationAmount += quantity;
 	}
 }

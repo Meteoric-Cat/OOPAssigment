@@ -1,6 +1,6 @@
 package model.database;
 
-abstract class MainEntity {
+public abstract class MainEntity {
 	private String type;
 	private String identifier;
 	private String label;
