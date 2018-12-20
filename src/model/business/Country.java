@@ -1,4 +1,4 @@
-package model.database;
+package model.business;
 
 public class Country extends MainEntity{
 	private String continent;

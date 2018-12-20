@@ -1,12 +1,25 @@
-package model.business;
+package model.database;
 
 public class EntityRelationShipManager {
+	public final String[] ENTITY_TYPE = {"LOCATION", "PERSON", "ORGANIZATION", "COUNTRY", "EVENT"};	
+	private static EntityRelationShipManager instance;	
+	
 	private int personAmount = 0;
 	private int organizationAmount = 0;
 	private int countryAmount = 0;
 	private int eventAmount = 0;
 	private int locationAmount = 0;
 	private int relationshipAmount = 0;
+	
+	private EntityRelationShipManager() {		
+	}
+	
+	public static EntityRelationShipManager getInstance() {
+		if (instance == null) {
+			instance = new EntityRelationShipManager();
+		}
+		return instance;
+	}
 	
 	// getters
 	public int getPersonAmount() {

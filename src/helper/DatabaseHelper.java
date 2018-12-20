@@ -19,87 +19,93 @@ import org.neo4j.driver.v1.TransactionWork;
 import org.neo4j.driver.v1.Value;
 import org.neo4j.driver.v1.types.TypeSystem;
 
-import model.business.EntityRelationShipManager;
-import model.business.Relationship;
-import model.database.MainEntity;
+import model.business.MainEntity;
+import model.database.EntityRelationShipManager;
+import model.database.Relationship;
 
 public class DatabaseHelper {
 	
-	private DatabaseHelper instance;
+	private static DatabaseHelper instance;
 	private String account;
 	private String password;
 	private Driver driver;
 	
-	public DatabaseHelper getInstance() {				// getInstance
+	public static DatabaseHelper getInstance() {				// getInstance
 		if (instance == null) {
 			instance = new DatabaseHelper();
 		}
 		return instance;
 	}
-	public void setInstance(DatabaseHelper instance) {
-		this.instance = instance;
-	}
+
 	public String getAccount() {
 		return account;
 	}
+
 	public void setAccount(String account) {
 		this.account = account;
 	}
+	
 	public String getPassword() {
 		return password;
 	}
+	
 	public void setPassword(String password) {
 		this.password = password;
 	}
+	
 	public Driver getDriver() {
 		return driver;
 	}
+	
 	public void setDriver(Driver driver) {
 		this.driver = driver;
 	}
-	
-	
-	public DatabaseHelper() {			// constructor default
 		
+	private DatabaseHelper() {			// constructor default		
 	}
-	public DatabaseHelper(DatabaseHelper instance, String account, String password, Driver driver) {
-		setInstance(instance);
-		setAccount(account);
-		setPassword(password);
-		setDriver(driver);
-	}
+	
+//	public DatabaseHelper(DatabaseHelper instance, String account, String password, Driver driver) {
+//		setAccount(account);
+//		setPassword(password);
+//		setDriver(driver);
+//	}
 	
 	public void createEntity(MainEntity entity, int amount) {
 		try(Session session = driver.session()){
 			int i = 0;		// để đánh số id định danh
 			int quantityCreatedEntity = 0;	// đếm số lượng entity đã tạo ra
 			
-			while (quantityCreatedEntity != amount) {			
-				session.run("CREATE (n:"+entity.getLabel()+"{identifier:'"+entity.getIdentifier()+"_"+i+"', label:'"+entity.getLabel()+"', description: '"+entity.getDescription()+"', origin: '"+entity.getOrigin()+"'})"); 						
+			while (quantityCreatedEntity != amount) {				
+				session.run("CREATE (n:"+entity.getType()+"{identifier:'"+entity.getIdentifier()+"_"+i+ 
+						"', label:'"+entity.getLabel()+"', description: '"+entity.getDescription()+"', origin: '"+entity.getOrigin()+"'})"); 						
 				quantityCreatedEntity++;
 				i++;
 				
 			}
 			JOptionPane.showMessageDialog(null, "Đã tạo thành công : "+quantityCreatedEntity+" thực thể");
 		} catch (Exception e) {
-			
+			JOptionPane.showMessageDialog(null, e.getMessage());
 		}
 	}
+	
 	public void createRelationship(Relationship relationship, int amount) {
 		try(Session session = driver.session()){
 			int i=0, j=0;		// đánh số ID định danh
 			int QuantityCreatedRelationship = 0;	// count CreatedRelationship
 			while (QuantityCreatedRelationship != amount) {
-				session.run("MATCH (a:"+relationship.getStart().getLabel() +"), (b: "+relationship.getEnd().getLabel()+" )  WHERE a.identifier = '"+ relationship.getStart().getIdentifier()+"_"+i+"' AND b.identifier = '" +  relationship.getEnd().getIdentifier()+"_"+j + "' CREATE (a)-[r:"+relationship.getType()+"]->(b) "); 									
+				session.run("MATCH (a:"+relationship.getStart().getLabel() +"), (b: "+relationship.getEnd().getLabel()+" )  " +
+						"WHERE a.identifier = '"+ relationship.getStart().getIdentifier()+"_"+i+"' AND b.identifier = '" + 
+						relationship.getEnd().getIdentifier()+"_"+j + "' CREATE (a)-[r:"+relationship.getType()+"]->(b) "); 									
 				i++;
 				j++;
 				QuantityCreatedRelationship++;
 			}
 			JOptionPane.showMessageDialog(null, "Đã tạo thành công "+QuantityCreatedRelationship+" quan hệ");
 		} catch (Exception e) {
-			
+			JOptionPane.showMessageDialog(null, e.getMessage());
 		}
 	}
+	
 	public StatementResult processQuery(String query) {
 		try (Session session = driver.session()){				
 			Statement statement = new Statement(query);
@@ -111,9 +117,10 @@ public class DatabaseHelper {
 		}
 	}
 	
-	public void closeDriver() {
+	public void closeDriver() throws Exception {
 		driver.close();
 	}
+	
 	public void initData(EntityRelationShipManager entityRelationshipManager) {		//
 		try(Session session = driver.session()){
 			StatementResult result;
@@ -167,10 +174,12 @@ public class DatabaseHelper {
 			
 		}
 	}
-	public void createDriver(String account, String password) throws Exception {
-			// bolt://localhost:7687 :  Bolt port 
-			driver = GraphDatabase.driver("bolt://localhost:7687", AuthTokens.basic(account, password));		
-	}
 	
+	public void createDriver(String account, String password) throws Exception {
+			// bolt://localhost:7687 :  Bolt port			
+			driver = GraphDatabase.driver("bolt://localhost:7687", AuthTokens.basic(account, password));
+			this.account = account;
+			this.password = password;
+	}	
 	
 }

@@ -1,4 +1,4 @@
-package model.database;
+package model.business;
 
 public abstract class MainEntity {
 	private String type;

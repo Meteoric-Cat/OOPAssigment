@@ -1,9 +1,10 @@
-package model.database;
+package model.business;
 
 public class Person extends MainEntity {
 	private String position;
 	
-	public Person(String type, String identifier, String label, String description, Origin origin, String position) {
+	public Person(String type, String identifier, String label, 
+			String description, Origin origin, String position) {
         super(type, identifier, label, description, origin);
         this.position = position;
     }

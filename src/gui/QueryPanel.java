@@ -7,13 +7,18 @@ import java.awt.event.MouseEvent;
 
 import javax.swing.JButton;
 import javax.swing.JLabel;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
 import javax.swing.JTextField;
 import javax.swing.table.DefaultTableModel;
 
+import helper.DatabaseHelper;
+
 public class QueryPanel extends JPanel implements Restorable{
+	//private final String LOGOUT_ERROR = "Logout failed";
+	
 	private Font fontButton = new Font("Tahoma", 0, 18);
 	private Font fontLabel = new Font("Tahoma", 0, 18);
 	private Font fontField = new Font("Tahoma", 0, 18);
@@ -134,9 +139,14 @@ public class QueryPanel extends JPanel implements Restorable{
     				
     			} 
     			if (source == QueryPanel.this.buttonLogout) {
-    				//close current driver
-    				
-    				MainFrame.getInstance().showPanel(MainFrame.PanelId.LOGIN_PANEL);    				
+    				//close current driver    				
+    				try {
+    					DatabaseHelper.getInstance().closeDriver();
+    					MainFrame.getInstance().showPanel(MainFrame.PanelId.LOGIN_PANEL);
+    				} catch (Exception e) {
+    					e.printStackTrace();
+    					JOptionPane.showMessageDialog(null, MainFrame.getInstance().LOGOUT_ERROR);
+    				}
     			}
     			if (source == QueryPanel.this.buttonCreate) {    				
     				MainFrame.getInstance().showPanel(MainFrame.PanelId.CREATE_PANEL);    				

@@ -7,11 +7,16 @@ import java.awt.event.MouseEvent;
 import javax.swing.GroupLayout;
 import javax.swing.JButton;
 import javax.swing.JLabel;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JPasswordField;
 import javax.swing.JTextField;
 
+import helper.DatabaseHelper;
+
 public class LoginPanel extends JPanel{
+	//private final String LOGIN_ERROR = "Invalid account";
+	
 	private Font fontLabel1 = new Font("Tahoma", 1, 36);
 	private Font fontLabel2 = new Font("Tahoma", 0, 18);
 	private Font fontButton = new Font("Tahoma", 1, 18);
@@ -110,6 +115,18 @@ public class LoginPanel extends JPanel{
     			
     			if (source == LoginPanel.this.buttonLogin) {
     				//check login then swap to query panel
+    				try {
+						DatabaseHelper.getInstance().createDriver(
+								LoginPanel.this.tfieldAccount.getText(),
+								String.valueOf(LoginPanel.this.pfieldPassword.getPassword())
+								);
+						
+						MainFrame.getInstance().showPanel(MainFrame.PanelId.QUERY_PANEL);
+					} catch (Exception e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();					
+						JOptionPane.showMessageDialog(null, MainFrame.getInstance().LOGIN_ERROR);
+					}
     			}
     		}
     	};   	

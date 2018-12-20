@@ -1,4 +1,4 @@
-package model.database;
+package model.business;
 
 public class Organization extends MainEntity {
 	private String headquarter;

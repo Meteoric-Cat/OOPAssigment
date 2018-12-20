@@ -1,12 +1,17 @@
 package gui;
 
+import java.awt.Panel;
+
 import javax.swing.JFrame;
 import javax.swing.JPanel;
 
 public class MainFrame extends JFrame{
+	public final String LOGOUT_ERROR = "Logout failed";
+	public final String LOGIN_ERROR = "Invalid account or password";
+	
 	private final int WIDTH = 1200;
-	private final int HEIGHT = 750;
-	private final int NO_PANEL = -1;
+	private final int HEIGHT = 880;
+	//private final int NO_PANEL = -1;
 	private final String APPLICATION_NAME = "Testing";
 	
 	private JPanel mainPanel;
@@ -24,21 +29,26 @@ public class MainFrame extends JFrame{
 		this.setDefaultCloseOperation(EXIT_ON_CLOSE);
 		this.setSize(WIDTH, HEIGHT);
 		this.setTitle(APPLICATION_NAME);
-		this.setResizable(false);
+		this.setResizable(false);	
+		//this.currentPanelId = NO_PANEL;
 		
-		this.currentPanelId = NO_PANEL;
-		
-		this.initMainPanel();
 		this.initLoginPanel();
 		this.initCreatePanel();
 		this.initQueryPanel();
-		
-		this.showPanel(PanelId.LOGIN_PANEL);
+		this.initMainPanel();		
+		//this.showPanel(PanelId.LOGIN_PANEL);
 	}
 	
 	private void initMainPanel() {
-		this.mainPanel = (JPanel) this.getContentPane();
+		this.mainPanel = new JPanel();
+		this.mainPanel.setSize(WIDTH, HEIGHT);		
 		this.mainPanel.setLayout(null);
+		this.setContentPane(this.mainPanel);
+		
+		this.enablePanel(this.loginPanel);
+		this.mainPanel.add(this.loginPanel);
+		this.loginPanel.setBounds(0, 0, WIDTH, HEIGHT);
+		this.currentPanelId = PanelId.LOGIN_PANEL;
 	}
 	
 	private void initLoginPanel() {
@@ -65,8 +75,8 @@ public class MainFrame extends JFrame{
 
 	public JPanel getPanelById(int id) {
 		switch (id) {
-		case PanelId.MAIN_PANEL: 
-			return this.mainPanel; 
+//		case PanelId.MAIN_PANEL: 
+//			return this.mainPanel; 
 		case PanelId.LOGIN_PANEL:
 			return this.loginPanel;
 		case PanelId.CREATE_PANEL:
@@ -80,11 +90,11 @@ public class MainFrame extends JFrame{
 	
 	public void showPanel(int id) {
 		JPanel currentPanel;
-		if (this.currentPanelId != NO_PANEL) {
-			currentPanel = this.getPanelById(this.currentPanelId);
-			this.mainPanel.remove(currentPanel);
-			this.disablePanel(currentPanel);
-		}
+		//if (this.currentPanelId != NO_PANEL) {
+		currentPanel = this.getPanelById(this.currentPanelId);
+		this.mainPanel.remove(currentPanel);
+		this.disablePanel(currentPanel);
+		//}
 		
 		//enable new panel
 		currentPanel = this.getPanelById(id);
@@ -93,13 +103,17 @@ public class MainFrame extends JFrame{
 			((Restorable)currentPanel).restoreState();
 		}
 		
-		this.mainPanel.add(currentPanel);		
+		this.mainPanel.add(currentPanel);
 		currentPanel.setBounds(0, 0, WIDTH, HEIGHT);
+		this.currentPanelId = id;
+		
+		this.mainPanel.revalidate();
+		this.mainPanel.repaint();
 	}
 	
 	public void enablePanel(JPanel panel) {
-		panel.setVisible(true);
 		panel.setEnabled(true);
+		panel.setVisible(true);
 	}
 	
 	public void disablePanel(JPanel panel) {

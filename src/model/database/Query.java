@@ -1,4 +1,4 @@
-package model.business;
+package model.database;
 
 public class Query {
 	private String content;
