@@ -1,4 +1,4 @@
-package model.business;
+package model;
 
 public class Origin {
 	private String link;
@@ -27,5 +27,10 @@ public class Origin {
 	}
 	public void setTime(Time time) {
 		this.time = time;
+	}
+	
+	@Override
+	public String toString() {
+		return "{" + "Link:" + this.link + ", time:" + this.time.getDate() + "}";
 	}
 }

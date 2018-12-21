@@ -120,7 +120,7 @@ public class LoginPanel extends JPanel{
 								LoginPanel.this.tfieldAccount.getText(),
 								String.valueOf(LoginPanel.this.pfieldPassword.getPassword())
 								);
-						
+																		
 						MainFrame.getInstance().showPanel(MainFrame.PanelId.QUERY_PANEL);
 					} catch (Exception e) {
 						// TODO Auto-generated catch block

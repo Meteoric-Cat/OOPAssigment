@@ -14,7 +14,10 @@ import javax.swing.JTable;
 import javax.swing.JTextField;
 import javax.swing.table.DefaultTableModel;
 
+import org.neo4j.driver.v1.StatementResult;
+
 import helper.DatabaseHelper;
+import model.Query;
 
 public class QueryPanel extends JPanel implements Restorable{
 	//private final String LOGOUT_ERROR = "Logout failed";
@@ -136,7 +139,10 @@ public class QueryPanel extends JPanel implements Restorable{
     			JButton source = (JButton) event.getSource();
     			
     			if (source == QueryPanel.this.buttonSend) {
+    				Query query = new Query();
+    				query.setContent(QueryPanel.this.tfieldQuery.getText());
     				
+    				StatementResult result = DatabaseHelper.getInstance().processQuery(query);
     			} 
     			if (source == QueryPanel.this.buttonLogout) {
     				//close current driver    				
@@ -176,4 +182,67 @@ public class QueryPanel extends JPanel implements Restorable{
     	this.tableResult.revalidate();
     	this.tableResult.repaint();
     }
+    
+//	public void deleteRelationship(Relationship relationship, int startNumber, int endNumber ) {
+//	try (Session session = this.driver.session()) {
+//		//get identifier base
+//		MainEntity startEntity = relationship.getStart();
+//		MainEntity endEntity = relationship.getEnd();
+//		
+//		int temp = startEntity.getIdentifier().lastIndexOf("_") + 1;
+//		String idBase1 = startEntity.getIdentifier().substring(0, temp);
+//		int rootID1 = Integer.parseInt(startEntity.getIdentifier().substring(temp));
+//		
+//		temp = endEntity.getIdentifier().lastIndexOf("_") + 1;
+//		String idBase2 = endEntity.getIdentifier().substring(0, temp);
+//		int rootID2 = Integer.parseInt(endEntity.getIdentifier().substring(temp));
+//		
+//		StringBuilder queryBuilder = new StringBuilder();
+//		//StringBuilder subBuilder = new StringBuilder();
+//		queryBuilder.append("MATCH ");
+//		//subBuilder.append(" DELETE ");
+//		
+//		temp = 0;
+//		for (int i=1; i<=startNumber; i++) 
+//			for (int j=1; j<= endNumber; j++) {
+//				temp++;
+//				queryBuilder.append("(n" + i + ":" + startEntity.getType() + "{identifier: $idn" + i + "})-[q" +
+//						temp + ":[" + relationship.getType() + "]->(m" + j + ":" + endEntity.getType() + "{identifier: $idm"+ j + "}),");					
+//			}		
+//		queryBuilder.append("()");
+//		queryBuilder.append(" DELETE ");
+//		for (int i=1; i<=temp - 1; i++) {
+//			queryBuilder.append("q" + i + ",");
+//		}
+//		queryBuilder.append("q" + temp);
+//					
+//		LinkedList<String> paramList = new LinkedList<String>();
+//		for (int i=1; i<=startNumber; i++) {
+//			paramList.add("idn" + i);
+//			paramList.add(idBase1 + (rootID1 + i));
+//		}
+//		for (int i=1; i<=endNumber; i++) {
+//			paramList.add("idm" + i);
+//			paramList.add(idBase2 + (rootID2 + i));			
+//		}
+//		
+//		Statement statement = new Statement(queryBuilder.toString());
+//		session.runAsync(statement.withParameters(Values.parameters(paramList.toArray())))
+//				.thenRun(
+//						()-> JOptionPane.showMessageDialog(null, "Deleted relationships")
+//				);
+//	} catch (Exception e) {
+//		e.printStackTrace();
+//		JOptionPane.showMessageDialog(null, e.getMessage());
+//	}
+//}
+
+//private Object[] getIDBase(String identifier) {
+//	int lastIndex = identifier.indexOf("_");
+//	return new String[] {
+//			identifier.substring(0, lastIndex + 1), 
+//			identifier.substring(lastIndex + 1)
+//	};
+//}
+
 }

@@ -15,10 +15,17 @@ import org.neo4j.driver.v1.StatementResult;
 import org.neo4j.driver.v1.Values;
 
 import model.EntityRelationShipManager;
-import model.business.MainEntity;
-import model.database.Relationship;
+import model.MainEntity;
+import model.Query;
+import model.Relationship;
 
 public class DatabaseHelper {
+	
+	//1, Sua ham createEntity di, thay MERGE cho CREATE de tranh duplicate doi tuong cung identifier, hoac match(doi tuong voi identier roi moi tao cho a)
+	//2, xem lai cac thuoc tinh cua cac class khi tao
+	//3, Truong Origin gio la mot danh sach nhe, a DOC THIEU DE nen khong chu y den
+	//4, Viet a mot cai method deleteEntity, deleteRelationship, theo y hieu cua m, a co de  example day nhung lam theo y m di.
+	//5, Xem lai luc tao quan he thi thoi gian trich rut cua 2 doi tuong la nhu nhau
 	
 	private static DatabaseHelper instance;
 	private String account;
@@ -75,9 +82,10 @@ public class DatabaseHelper {
 			int i = 0;		// để đánh số id định danh
 			int quantityCreatedEntity = 0;	// đếm số lượng entity đã tạo ra			
 			
+			//???????? class Country, Location, Person thieu thuoc tinh
 			while (quantityCreatedEntity != number) {				
 				session.run("MERGE (n:"+entity.getType()+"{identifier:'"+ idBase + (rootID + i ) + 
-						"', label:'"+entity.getLabel()+"', description: '"+entity.getDescription()+"', origin: '"+entity.getOrigin()+"'})"); 						
+						"', label:'"+entity.getLabel()+"', description: '"+entity.getDescription()+"', origin: '"+entity.getOriginsAsString()+"'})"); 						
 				quantityCreatedEntity++;          //?quantityCreatedEntity == i? => do we need something like i here?
 				i++;				
 			}
@@ -105,9 +113,9 @@ public class DatabaseHelper {
 		}
 	}
 	
-	public StatementResult processQuery(String query) {
+	public StatementResult processQuery(Query query) {
 		try (Session session = driver.session()){				
-			Statement statement = new Statement(query);
+			Statement statement = new Statement(query.getContent());
 			StatementResult result =  session.run(statement);
 			return result;
 			
@@ -179,104 +187,44 @@ public class DatabaseHelper {
 			driver = GraphDatabase.driver("bolt://localhost:7687", AuthTokens.basic(account, password));
 			this.account = account;
 			this.password = password;
-	}	
-	
-	public void deleteEntity(MainEntity entity, int number) {
-		try (Session session = this.driver.session()) {
-			//get id base	
-			int lastIndex = entity.getIdentifier().lastIndexOf("_") + 1;
-			String idBase = entity.getIdentifier().substring(0, 
-					lastIndex);
-			int rootID = Integer.parseInt(entity.getIdentifier().substring(lastIndex));					
-			
-			//build content of this query
-			StringBuilder queryBuilder = new StringBuilder();
-			LinkedList<String> paramList = new LinkedList<String>();			
-
-			queryBuilder.append("MATCH ");
-			for (int i = 1; i <= number; i++) {
-				queryBuilder.append("(n" + i + ":" + entity.getType() + "{identifier: $id" + i + "}),");
-				paramList.add("id" + i);
-				paramList.add(idBase + (i + rootID));
-			}
-			queryBuilder.append("() DETACH DELETE ");
-			
-			for (int i = 1; i <= number - 1; i++) {
-				queryBuilder.append("n"+ i + ","); 
-			}
-			queryBuilder.append("n" + number);
-			
-			//run query in async mode
-			Statement statement = new Statement(queryBuilder.toString());
-			session.runAsync(statement.withParameters(Values.parameters(paramList.toArray())))
-					.thenRun(
-						() -> JOptionPane.showMessageDialog(null, "Deleted entities")					
-					);
-		} catch (Exception e) {
-			e.printStackTrace();
-			JOptionPane.showMessageDialog(null, e.getMessage());
-		}
 	}
 	
-	public void deleteRelationship(Relationship relationship, int startNumber, int endNumber ) {
-		try (Session session = this.driver.session()) {
-			//get identifier base
-			MainEntity startEntity = relationship.getStart();
-			MainEntity endEntity = relationship.getEnd();
-			
-			int temp = startEntity.getIdentifier().lastIndexOf("_") + 1;
-			String idBase1 = startEntity.getIdentifier().substring(0, temp);
-			int rootID1 = Integer.parseInt(startEntity.getIdentifier().substring(temp));
-			
-			temp = endEntity.getIdentifier().lastIndexOf("_") + 1;
-			String idBase2 = endEntity.getIdentifier().substring(0, temp);
-			int rootID2 = Integer.parseInt(endEntity.getIdentifier().substring(temp));
-			
-			StringBuilder queryBuilder = new StringBuilder();
-			//StringBuilder subBuilder = new StringBuilder();
-			queryBuilder.append("MATCH ");
-			//subBuilder.append(" DELETE ");
-			
-			temp = 0;
-			for (int i=1; i<=startNumber; i++) 
-				for (int j=1; j<= endNumber; j++) {
-					temp++;
-					queryBuilder.append("(n" + i + ":" + startEntity.getType() + "{identifier: $idn" + i + "})-[q" +
-							temp + ":[" + relationship.getType() + "]->(m" + j + ":" + endEntity.getType() + "{identifier: $idm"+ j + "}),");					
-				}		
-			queryBuilder.append("()");
-			queryBuilder.append(" DELETE ");
-			for (int i=1; i<=temp - 1; i++) {
-				queryBuilder.append("q" + i + ",");
-			}
-			queryBuilder.append("q" + temp);
-						
-			LinkedList<String> paramList = new LinkedList<String>();
-			for (int i=1; i<=startNumber; i++) {
-				paramList.add("idn" + i);
-				paramList.add(idBase1 + (rootID1 + i));
-			}
-			for (int i=1; i<=endNumber; i++) {
-				paramList.add("idm" + i);
-				paramList.add(idBase2 + (rootID2 + i));			
-			}
-			
-			Statement statement = new Statement(queryBuilder.toString());
-			session.runAsync(statement.withParameters(Values.parameters(paramList.toArray())))
-					.thenRun(
-							()-> JOptionPane.showMessageDialog(null, "Deleted relationships")
-					);
-		} catch (Exception e) {
-			e.printStackTrace();
-			JOptionPane.showMessageDialog(null, e.getMessage());
-		}
-	}
-	
-//	private Object[] getIDBase(String identifier) {
-//		int lastIndex = identifier.indexOf("_");
-//		return new String[] {
-//				identifier.substring(0, lastIndex + 1), 
-//				identifier.substring(lastIndex + 1)
-//		};
+	//example 
+//	public void deleteEntity(MainEntity entity, int number) {
+//		try (Session session = this.driver.session()) {
+//			//get id base	
+//			int lastIndex = entity.getIdentifier().lastIndexOf("_") + 1;
+//			String idBase = entity.getIdentifier().substring(0, 
+//					lastIndex);
+//			int rootID = Integer.parseInt(entity.getIdentifier().substring(lastIndex));					
+//			
+//			//build content of this query
+//			StringBuilder queryBuilder = new StringBuilder();
+//			LinkedList<String> paramList = new LinkedList<String>();			
+//
+//			queryBuilder.append("MATCH ");
+//			for (int i = 1; i <= number; i++) {
+//				queryBuilder.append("(n" + i + ":" + entity.getType() + "{identifier: $id" + i + "}),");
+//				paramList.add("id" + i);
+//				paramList.add(idBase + (i + rootID));
+//			}
+//			queryBuilder.append("() DETACH DELETE ");
+//			
+//			for (int i = 1; i <= number - 1; i++) {
+//				queryBuilder.append("n"+ i + ","); 
+//			}
+//			queryBuilder.append("n" + number);
+//			
+//			//run query in async mode
+//			Statement statement = new Statement(queryBuilder.toString());
+//			session.runAsync(statement.withParameters(Values.parameters(paramList.toArray())))
+//					.thenRun(
+//						() -> JOptionPane.showMessageDialog(null, "Deleted entities")					
+//					);
+//		} catch (Exception e) {
+//			e.printStackTrace();
+//			JOptionPane.showMessageDialog(null, e.getMessage());
+//		}
 //	}
+	
 }

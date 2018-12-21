@@ -1,4 +1,4 @@
-package model.business;
+package model;
 
 import java.text.Format;
 import java.text.ParseException;
@@ -23,8 +23,8 @@ public class Time {
 	
 	public void setDate(Date date) {
 		this.date = date;
-	};
-		
+	};		
+	
 	public String toString(Date date) {
 		Format formatter = new SimpleDateFormat("dd/MM/yyyy");
 		return formatter.format(date);

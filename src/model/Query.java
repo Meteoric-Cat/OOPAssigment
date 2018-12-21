@@ -1,8 +1,8 @@
-package model.database;
+package model;
 
 public class Query {
 	private String content;
-
+	
 	public String getContent() {
 		return content;
 	}

@@ -1,10 +1,12 @@
-package model.business;
+package model;
+
+import java.util.LinkedList;
 
 public class Organization extends MainEntity {
 	private String headquarter;
 	
-	public Organization(String type, String identifier, String label, String description, Origin origin, String headquarter) {
-        super(type, identifier, label, description, origin);
+	public Organization(String type, String identifier, String label, String description, LinkedList<Origin> origins, String headquarter) {
+        super(type, identifier, label, description, origins);
         this.headquarter = headquarter;
     }
 	

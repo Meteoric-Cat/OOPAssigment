@@ -22,8 +22,9 @@ import javax.swing.event.ChangeListener;
 import helper.DatabaseHelper;
 import helper.EntityFactory;
 import model.EntityRelationShipManager;
-import model.business.MainEntity;
-import model.database.Relationship;
+import model.MainEntity;
+import model.Origin;
+import model.Relationship;
 
 public class CreatePanel extends JPanel implements Restorable{
 	private final int MIN_NUMBER = 0;
@@ -489,14 +490,15 @@ public class CreatePanel extends JPanel implements Restorable{
     					EntityFactory factory = new EntityFactory();
     					MainEntity mainEntity = factory.getEntity(
     							CreatePanel.this.cboxType.getSelectedIndex(),
-    							CreatePanel.this.getEntityData()
+    							CreatePanel.this.getEntityOrigins(),
+    							CreatePanel.this.getEntityOtherData()
     					);
     					if (source == CreatePanel.this.buttonECreate) {
     						DatabaseHelper.getInstance().createEntity(mainEntity,
     							(int) CreatePanel.this.spinnerENumber.getValue());
     					}
     					else {
-    						DatabaseHelper.getInstance().deleteEntity(mainEntity, number);
+    						//DatabaseHelper.getInstance().deleteEntity(mainEntity, number);
     					}    						
     				}    				
     			} 
@@ -508,12 +510,12 @@ public class CreatePanel extends JPanel implements Restorable{
     					EntityFactory factory = new EntityFactory();
     					MainEntity startEntity = factory.getEntity(
     							CreatePanel.this.cboxType.getSelectedIndex(),
-    							"",	"10/10/2018",
+    							CreatePanel.this.getEntityOrigins(),
     							CreatePanel.this.tfieldE1Identifier.getText(),
     							"",	"",	"",	"", "");
     					MainEntity endEntity = factory.getEntity(
     							CreatePanel.this.cboxE2Type.getSelectedIndex(),
-    							"", "10/10/2018",
+    							CreatePanel.this.getEntityOrigins(),
     							CreatePanel.this.tfieldE2Identifier.getText(),
     							"", "", "", "", "");
     					Relationship relationship = new Relationship(CreatePanel.this.tfieldRelationship.getText());
@@ -523,7 +525,7 @@ public class CreatePanel extends JPanel implements Restorable{
     					
     					//DatabaseHelper.getInstance().createRelationship(relationship, start
     					if (source == CreatePanel.this.buttonRDelete) {
-    						DatabaseHelper.getInstance().deleteRelationship(relationship, startNumber, endNumber);
+    						//DatabaseHelper.getInstance().deleteRelationship(relationship, startNumber, endNumber);
     					} 
     				}
     			}
@@ -588,16 +590,10 @@ public class CreatePanel extends JPanel implements Restorable{
     	};
     }    	
     
-    public String[] getEntityData() {
-    	String date = String.join("/", 
-    			String.valueOf(this.spinnerDay.getValue()), 
-    			String.valueOf(this.spinnerMonth.getValue()),
-    			String.valueOf(this.spinnerYear.getValue())
-    	);
-    	
+    public String[] getEntityOtherData() {
     	LinkedList<String> list = new LinkedList<String>();
-    	list.add(this.tfieldLink.getText());
-    	list.add(date);
+    	//list.add(this.tfieldLink.getText());
+    	//list.add(date);
     	list.add(this.tfieldIdentifier.getText());
     	list.add(this.tfieldLabel.getText());
     	list.add(this.tfieldDescription.getText());
@@ -606,6 +602,18 @@ public class CreatePanel extends JPanel implements Restorable{
     	}
     	
     	return (String[]) list.toArray();
+    }
+    
+    public LinkedList<Origin> getEntityOrigins() {
+    	String date = String.join("/", 
+    			String.valueOf(this.spinnerDay.getValue()), 
+    			String.valueOf(this.spinnerMonth.getValue()),
+    			String.valueOf(this.spinnerYear.getValue())
+    	);
+    	
+    	LinkedList<Origin> list = new LinkedList<Origin>();
+    	list.add(new Origin(this.tfieldIdentifier.getText(), date));
+    	return list;
     }
     
     public void adjustSpinner(JSpinner spinner, int minValue, int maxValue) {

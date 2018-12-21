@@ -1,18 +1,21 @@
-package model.business;
+package model;
+
+import java.util.Iterator;
+import java.util.LinkedList;
 
 public abstract class MainEntity {
 	private String type;
 	private String identifier;
 	private String label;
 	private String description;
-	private Origin origin;
+	private LinkedList<Origin> origins;
 	
-	public MainEntity(String type, String identifier, String label, String description, Origin origin) {
+	public MainEntity(String type, String identifier, String label, String description, LinkedList<Origin> origins) {
         setType(type);
         setIdentifier(identifier);
         setLabel(label);
         setDescription(description);
-        setOrigin(origin);
+        setOrigins(origins);
     }
 	// setters
 	public String getType() {
@@ -27,8 +30,13 @@ public abstract class MainEntity {
 	public String getDescription() {
 		return this.description;
 	}
-	public Origin getOrigin() {
-		return this.origin;
+	public String getOriginsAsString() {
+		StringBuilder result = new StringBuilder();
+		Iterator<Origin> iter = this.origins.iterator();
+		while (iter.hasNext()) {
+			result.append(iter.next().toString());
+		}
+		return result.toString();
 	}
 	// getters
 	public void setType(String type) {
@@ -43,7 +51,7 @@ public abstract class MainEntity {
 	public void setDescription(String description) {
 		this.description = description;
 	}
-	public void setOrigin(Origin origin) {
-		this.origin = origin;
+	public void setOrigins(LinkedList<Origin> origins) {
+		this.origins = origins;
 	}
 }

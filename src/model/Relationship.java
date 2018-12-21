@@ -1,6 +1,4 @@
-package model.database;
-
-import model.business.MainEntity;
+package model;
 
 public class Relationship {
 	private String type;

@@ -1,10 +1,12 @@
-package model.business;
+package model;
+
+import java.util.LinkedList;
 
 public class Country extends MainEntity{
 	private String continent;
 	
-	public Country(String type, String identifier, String label, String description, Origin origin, String continent) {
-        super(type, identifier, label, description, origin);
+	public Country(String type, String identifier, String label, String description, LinkedList<Origin> origins, String continent) {
+        super(type, identifier, label, description, origins);
         this.continent = continent; 
     }
 	// getter
