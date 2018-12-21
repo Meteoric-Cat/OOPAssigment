@@ -4,6 +4,9 @@ import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.util.Iterator;
+import java.util.Map;
+import java.util.Set;
 
 import javax.swing.JButton;
 import javax.swing.JLabel;
@@ -14,6 +17,7 @@ import javax.swing.JTable;
 import javax.swing.JTextField;
 import javax.swing.table.DefaultTableModel;
 
+import org.neo4j.driver.v1.Record;
 import org.neo4j.driver.v1.StatementResult;
 
 import helper.DatabaseHelper;
@@ -137,12 +141,32 @@ public class QueryPanel extends JPanel implements Restorable{
     		@Override
     		public void mouseClicked(MouseEvent event) {
     			JButton source = (JButton) event.getSource();
+    			QueryPanel.this.restoreState();
     			
     			if (source == QueryPanel.this.buttonSend) {
     				Query query = new Query();
     				query.setContent(QueryPanel.this.tfieldQuery.getText());
     				
     				StatementResult result = DatabaseHelper.getInstance().processQuery(query);
+    				Record record = null;
+    				
+    				boolean first = true;
+    				while (result.hasNext()) {
+    					record = result.next();
+    					Map<String, Object> entityData = record.get(0).asMap();
+    					
+    					if (first) {
+    						//add columns
+    						Set<String> value = entityData.keySet();
+    						Iterator<String> iter = value.iterator();
+    						while (iter.hasNext()) {
+    							QueryPanel.this.tableResultModel.addColumn(iter.next());    							
+    						}
+    						first = false;
+    					}
+    					
+    					QueryPanel.this.tableResultModel.addRow(entityData.values().toArray());
+    				}
     			} 
     			if (source == QueryPanel.this.buttonLogout) {
     				//close current driver    				
