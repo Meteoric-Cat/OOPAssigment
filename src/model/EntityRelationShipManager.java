@@ -1,7 +1,10 @@
-package model.database;
+package model;
+
+import java.util.HashMap;
 
 public class EntityRelationShipManager {
-	public final String[] ENTITY_TYPE = {"LOCATION", "PERSON", "ORGANIZATION", "COUNTRY", "EVENT"};	
+	public final String[] ENTITY_TYPE = {"LOCATION", "PERSON", "ORGANIZATION", "COUNTRY", "EVENT"};
+	public HashMap<String, String> typeProperty;
 	private static EntityRelationShipManager instance;	
 	
 	private int personAmount = 0;
@@ -12,6 +15,10 @@ public class EntityRelationShipManager {
 	private int relationshipAmount = 0;
 	
 	private EntityRelationShipManager() {		
+		this.typeProperty = new HashMap<String, String>();
+		this.typeProperty.put("PERSON", "Position");
+		this.typeProperty.put("ORGANIZATION", "Headquater");
+		this.typeProperty.put("COUNTRY", "Continent");
 	}
 	
 	public static EntityRelationShipManager getInstance() {

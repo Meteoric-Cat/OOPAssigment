@@ -2,6 +2,8 @@ package gui;
 
 import java.awt.Dimension;
 import java.awt.Font;
+import java.awt.event.ItemEvent;
+import java.awt.event.ItemListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.util.LinkedList;
@@ -19,8 +21,9 @@ import javax.swing.event.ChangeListener;
 
 import helper.DatabaseHelper;
 import helper.EntityFactory;
+import model.EntityRelationShipManager;
 import model.business.MainEntity;
-import model.database.EntityRelationShipManager;
+import model.database.Relationship;
 
 public class CreatePanel extends JPanel implements Restorable{
 	private final int MIN_NUMBER = 0;
@@ -88,6 +91,8 @@ public class CreatePanel extends JPanel implements Restorable{
     
     private MouseAdapter mAdapterButton;
     private ChangeListener cListenerSpinner;
+    private ItemListener iListenerCBox;
+    
 
     public CreatePanel() {
     	this.initComponents();
@@ -139,6 +144,9 @@ public class CreatePanel extends JPanel implements Restorable{
         buttonRDelete = new JButton();
         buttonLogout = new JButton();
         buttonQuery = new JButton();
+        
+        labelSP = new JLabel();
+        tfieldSP = new JTextField();
         
         
         this.label1.setFont(fontLabel1);
@@ -448,7 +456,9 @@ public class CreatePanel extends JPanel implements Restorable{
         			javax.swing.GroupLayout.PREFERRED_SIZE))
         	.addGap(0, 47, Short.MAX_VALUE))
         );
-        panelChild.setVisible(false);
+        panelChild.setVisible(true);
+        tfieldSP.setVisible(false);
+        labelSP.setVisible(false);
     }
 
     private void initListeners() {
@@ -473,7 +483,7 @@ public class CreatePanel extends JPanel implements Restorable{
     				return;
     			}
 
-    			if (source == CreatePanel.this.buttonECreate) {
+    			if (source == CreatePanel.this.buttonECreate || source == CreatePanel.this.buttonEDelete) {
     				int number = (int) CreatePanel.this.spinnerENumber.getValue();
     				if (number > 0) {
     					EntityFactory factory = new EntityFactory();
@@ -481,18 +491,41 @@ public class CreatePanel extends JPanel implements Restorable{
     							CreatePanel.this.cboxType.getSelectedIndex(),
     							CreatePanel.this.getEntityData()
     					);
-    					DatabaseHelper.getInstance().createEntity(mainEntity, (int) CreatePanel.this.spinnerENumber.getValue());		
-    				}
-    				
+    					if (source == CreatePanel.this.buttonECreate) {
+    						DatabaseHelper.getInstance().createEntity(mainEntity,
+    							(int) CreatePanel.this.spinnerENumber.getValue());
+    					}
+    					else {
+    						DatabaseHelper.getInstance().deleteEntity(mainEntity, number);
+    					}    						
+    				}    				
     			} 
-    			if (source == CreatePanel.this.buttonEDelete) {
+    			if (source == CreatePanel.this.buttonRCreate || source == CreatePanel.this.buttonRDelete) {
+    				int startNumber = (int) CreatePanel.this.spinnerE1Number.getValue();
+    				int endNumber = (int) CreatePanel.this.spinnerE2Number.getValue();
     				
-    			}
-    			if (source == CreatePanel.this.buttonRCreate) {
-    				
-    			}
-    			if (source == CreatePanel.this.buttonRDelete) {
-    				
+    				if (startNumber <= 0 || endNumber <= 0) {
+    					EntityFactory factory = new EntityFactory();
+    					MainEntity startEntity = factory.getEntity(
+    							CreatePanel.this.cboxType.getSelectedIndex(),
+    							"",	"10/10/2018",
+    							CreatePanel.this.tfieldE1Identifier.getText(),
+    							"",	"",	"",	"", "");
+    					MainEntity endEntity = factory.getEntity(
+    							CreatePanel.this.cboxE2Type.getSelectedIndex(),
+    							"", "10/10/2018",
+    							CreatePanel.this.tfieldE2Identifier.getText(),
+    							"", "", "", "", "");
+    					Relationship relationship = new Relationship(CreatePanel.this.tfieldRelationship.getText());
+    					
+    					relationship.setStart(startEntity);
+    					relationship.setEnd(endEntity);
+    					
+    					//DatabaseHelper.getInstance().createRelationship(relationship, start
+    					if (source == CreatePanel.this.buttonRDelete) {
+    						DatabaseHelper.getInstance().deleteRelationship(relationship, startNumber, endNumber);
+    					} 
+    				}
     			}
     			//Query ...
     		}
@@ -528,6 +561,30 @@ public class CreatePanel extends JPanel implements Restorable{
 							CreatePanel.this.MAX_YEAR);
 				}
 			}    		
+    	};
+    	
+    	this.iListenerCBox = new ItemListener() {
+
+			@Override
+			public void itemStateChanged(ItemEvent event) {
+				// TODO Auto-generated method stub
+				if (event.getStateChange() == ItemEvent.SELECTED) {
+					String item = (String) event.getItem();
+					//System.out.println(item);
+					if (item.equalsIgnoreCase("PERSON") 
+							|| item.equalsIgnoreCase("ORGANIZATION") 
+							|| item.equalsIgnoreCase("COUNTRY")) {
+						CreatePanel.this.showSPFields(
+								EntityRelationShipManager.getInstance().typeProperty.get(item) + ":"
+						);
+						return;
+					}; 
+					
+					CreatePanel.this.tfieldSP.setVisible(false);
+					CreatePanel.this.labelSP.setVisible(false);
+				}
+			}
+    		
     	};
     }    	
     
@@ -573,6 +630,16 @@ public class CreatePanel extends JPanel implements Restorable{
     	this.spinnerE1Number.addChangeListener(this.cListenerSpinner);
     	this.spinnerE2Number.addChangeListener(this.cListenerSpinner);
     	this.spinnerENumber.addChangeListener(this.cListenerSpinner);
+    	
+    	this.cboxType.addItemListener(this.iListenerCBox);
+    }
+    
+    private void showSPFields(String text) {
+    	this.tfieldSP.setText("");
+    	this.tfieldSP.setVisible(true);
+    	
+    	this.labelSP.setText(text);
+    	this.labelSP.setVisible(true);
     }
     
     public void restoreState() {
@@ -593,5 +660,6 @@ public class CreatePanel extends JPanel implements Restorable{
     	this.tfieldRelationship.setText(initialFieldValue);
     	this.spinnerE1Number.setValue(initialSpinnerValue);
     	this.spinnerE2Number.setValue(initialSpinnerValue);
-    }
+    }    
+    
 }

@@ -1,8 +1,7 @@
 package helper;
 
 
-import java.util.Map;
-import java.util.concurrent.CompletionStage;
+import java.util.LinkedList;
 
 import javax.swing.JOptionPane;
 
@@ -13,14 +12,10 @@ import org.neo4j.driver.v1.Record;
 import org.neo4j.driver.v1.Session;
 import org.neo4j.driver.v1.Statement;
 import org.neo4j.driver.v1.StatementResult;
-import org.neo4j.driver.v1.StatementResultCursor;
-import org.neo4j.driver.v1.Transaction;
-import org.neo4j.driver.v1.TransactionWork;
-import org.neo4j.driver.v1.Value;
-import org.neo4j.driver.v1.types.TypeSystem;
+import org.neo4j.driver.v1.Values;
 
+import model.EntityRelationShipManager;
 import model.business.MainEntity;
-import model.database.EntityRelationShipManager;
 import model.database.Relationship;
 
 public class DatabaseHelper {
@@ -70,17 +65,21 @@ public class DatabaseHelper {
 //		setDriver(driver);
 //	}
 	
-	public void createEntity(MainEntity entity, int amount) {
+	public void createEntity(MainEntity entity, int number) {
 		try(Session session = driver.session()){
-			int i = 0;		// để đánh số id định danh
-			int quantityCreatedEntity = 0;	// đếm số lượng entity đã tạo ra
+			//get id base
+			int lastIndex = entity.getIdentifier().lastIndexOf("_");
+			String idBase = entity.getIdentifier().substring(0, lastIndex + 1);
+			int rootID = Integer.parseInt(entity.getIdentifier().substring(lastIndex + 1));
 			
-			while (quantityCreatedEntity != amount) {				
-				session.run("CREATE (n:"+entity.getType()+"{identifier:'"+entity.getIdentifier()+"_"+i+ 
+			int i = 0;		// để đánh số id định danh
+			int quantityCreatedEntity = 0;	// đếm số lượng entity đã tạo ra			
+			
+			while (quantityCreatedEntity != number) {				
+				session.run("MERGE (n:"+entity.getType()+"{identifier:'"+ idBase + (rootID + i ) + 
 						"', label:'"+entity.getLabel()+"', description: '"+entity.getDescription()+"', origin: '"+entity.getOrigin()+"'})"); 						
-				quantityCreatedEntity++;
-				i++;
-				
+				quantityCreatedEntity++;          //?quantityCreatedEntity == i? => do we need something like i here?
+				i++;				
 			}
 			JOptionPane.showMessageDialog(null, "Đã tạo thành công : "+quantityCreatedEntity+" thực thể");
 		} catch (Exception e) {
@@ -88,11 +87,11 @@ public class DatabaseHelper {
 		}
 	}
 	
-	public void createRelationship(Relationship relationship, int amount) {
+	public void createRelationship(Relationship relationship, int number) {
 		try(Session session = driver.session()){
 			int i=0, j=0;		// đánh số ID định danh
 			int QuantityCreatedRelationship = 0;	// count CreatedRelationship
-			while (QuantityCreatedRelationship != amount) {
+			while (QuantityCreatedRelationship != number) {
 				session.run("MATCH (a:"+relationship.getStart().getLabel() +"), (b: "+relationship.getEnd().getLabel()+" )  " +
 						"WHERE a.identifier = '"+ relationship.getStart().getIdentifier()+"_"+i+"' AND b.identifier = '" + 
 						relationship.getEnd().getIdentifier()+"_"+j + "' CREATE (a)-[r:"+relationship.getType()+"]->(b) "); 									
@@ -182,4 +181,102 @@ public class DatabaseHelper {
 			this.password = password;
 	}	
 	
+	public void deleteEntity(MainEntity entity, int number) {
+		try (Session session = this.driver.session()) {
+			//get id base	
+			int lastIndex = entity.getIdentifier().lastIndexOf("_") + 1;
+			String idBase = entity.getIdentifier().substring(0, 
+					lastIndex);
+			int rootID = Integer.parseInt(entity.getIdentifier().substring(lastIndex));					
+			
+			//build content of this query
+			StringBuilder queryBuilder = new StringBuilder();
+			LinkedList<String> paramList = new LinkedList<String>();			
+
+			queryBuilder.append("MATCH ");
+			for (int i = 1; i <= number; i++) {
+				queryBuilder.append("(n" + i + ":" + entity.getType() + "{identifier: $id" + i + "}),");
+				paramList.add("id" + i);
+				paramList.add(idBase + (i + rootID));
+			}
+			queryBuilder.append("() DETACH DELETE ");
+			
+			for (int i = 1; i <= number - 1; i++) {
+				queryBuilder.append("n"+ i + ","); 
+			}
+			queryBuilder.append("n" + number);
+			
+			//run query in async mode
+			Statement statement = new Statement(queryBuilder.toString());
+			session.runAsync(statement.withParameters(Values.parameters(paramList.toArray())))
+					.thenRun(
+						() -> JOptionPane.showMessageDialog(null, "Deleted entities")					
+					);
+		} catch (Exception e) {
+			e.printStackTrace();
+			JOptionPane.showMessageDialog(null, e.getMessage());
+		}
+	}
+	
+	public void deleteRelationship(Relationship relationship, int startNumber, int endNumber ) {
+		try (Session session = this.driver.session()) {
+			//get identifier base
+			MainEntity startEntity = relationship.getStart();
+			MainEntity endEntity = relationship.getEnd();
+			
+			int temp = startEntity.getIdentifier().lastIndexOf("_") + 1;
+			String idBase1 = startEntity.getIdentifier().substring(0, temp);
+			int rootID1 = Integer.parseInt(startEntity.getIdentifier().substring(temp));
+			
+			temp = endEntity.getIdentifier().lastIndexOf("_") + 1;
+			String idBase2 = endEntity.getIdentifier().substring(0, temp);
+			int rootID2 = Integer.parseInt(endEntity.getIdentifier().substring(temp));
+			
+			StringBuilder queryBuilder = new StringBuilder();
+			//StringBuilder subBuilder = new StringBuilder();
+			queryBuilder.append("MATCH ");
+			//subBuilder.append(" DELETE ");
+			
+			temp = 0;
+			for (int i=1; i<=startNumber; i++) 
+				for (int j=1; j<= endNumber; j++) {
+					temp++;
+					queryBuilder.append("(n" + i + ":" + startEntity.getType() + "{identifier: $idn" + i + "})-[q" +
+							temp + ":[" + relationship.getType() + "]->(m" + j + ":" + endEntity.getType() + "{identifier: $idm"+ j + "}),");					
+				}		
+			queryBuilder.append("()");
+			queryBuilder.append(" DELETE ");
+			for (int i=1; i<=temp - 1; i++) {
+				queryBuilder.append("q" + i + ",");
+			}
+			queryBuilder.append("q" + temp);
+						
+			LinkedList<String> paramList = new LinkedList<String>();
+			for (int i=1; i<=startNumber; i++) {
+				paramList.add("idn" + i);
+				paramList.add(idBase1 + (rootID1 + i));
+			}
+			for (int i=1; i<=endNumber; i++) {
+				paramList.add("idm" + i);
+				paramList.add(idBase2 + (rootID2 + i));			
+			}
+			
+			Statement statement = new Statement(queryBuilder.toString());
+			session.runAsync(statement.withParameters(Values.parameters(paramList.toArray())))
+					.thenRun(
+							()-> JOptionPane.showMessageDialog(null, "Deleted relationships")
+					);
+		} catch (Exception e) {
+			e.printStackTrace();
+			JOptionPane.showMessageDialog(null, e.getMessage());
+		}
+	}
+	
+//	private Object[] getIDBase(String identifier) {
+//		int lastIndex = identifier.indexOf("_");
+//		return new String[] {
+//				identifier.substring(0, lastIndex + 1), 
+//				identifier.substring(lastIndex + 1)
+//		};
+//	}
 }

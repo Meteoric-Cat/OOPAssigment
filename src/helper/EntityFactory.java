@@ -1,5 +1,6 @@
 package helper;
 
+import model.EntityRelationShipManager;
 import model.business.Country;
 import model.business.Event;
 import model.business.Location;
@@ -7,8 +8,6 @@ import model.business.MainEntity;
 import model.business.Organization;
 import model.business.Origin;
 import model.business.Person;
-import model.business.Time;
-import model.database.EntityRelationShipManager;
 
 public class EntityFactory {	
 	public MainEntity getEntity(int typeID, String... data) {
