@@ -6,6 +6,8 @@ import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.lang.reflect.Array;
+import java.util.Arrays;
 import java.util.LinkedList;
 
 import javax.swing.DefaultComboBoxModel;
@@ -498,7 +500,7 @@ public class CreatePanel extends JPanel implements Restorable{
     							(int) CreatePanel.this.spinnerENumber.getValue());
     					}
     					else {
-    						//DatabaseHelper.getInstance().deleteEntity(mainEntity, number);
+    						DatabaseHelper.getInstance().deleteEntity(mainEntity, number);
     					}    						
     				}    				
     			} 
@@ -601,7 +603,8 @@ public class CreatePanel extends JPanel implements Restorable{
     		list.add(this.tfieldSP.getText());
     	}
     	
-    	return (String[]) list.toArray();
+    	Object[] array = list.toArray();
+    	return Arrays.copyOf(array, array.length, String[].class);
     }
     
     public LinkedList<Origin> getEntityOrigins() {
@@ -612,7 +615,7 @@ public class CreatePanel extends JPanel implements Restorable{
     	);
     	
     	LinkedList<Origin> list = new LinkedList<Origin>();
-    	list.add(new Origin(this.tfieldIdentifier.getText(), date));
+    	list.add(new Origin(this.tfieldLink.getText(), date));//roi day
     	return list;
     }
     

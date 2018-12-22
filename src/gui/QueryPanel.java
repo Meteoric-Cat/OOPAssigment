@@ -141,7 +141,6 @@ public class QueryPanel extends JPanel implements Restorable{
     		@Override
     		public void mouseClicked(MouseEvent event) {
     			JButton source = (JButton) event.getSource();
-    			QueryPanel.this.restoreState();
     			
     			if (source == QueryPanel.this.buttonSend) {
     				Query query = new Query();
@@ -149,6 +148,9 @@ public class QueryPanel extends JPanel implements Restorable{
     				
     				StatementResult result = DatabaseHelper.getInstance().processQuery(query);
     				Record record = null;
+    				
+    				QueryPanel.this.restoreState();
+    				System.gc();
     				
     				boolean first = true;
     				while (result.hasNext()) {
