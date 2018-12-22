@@ -64,47 +64,25 @@ public class LoginPanel extends JPanel{
     }
     
     private void arrangeComponents() {
-        GroupLayout layout = new GroupLayout(this);
-        this.setLayout(layout);
-        layout.setHorizontalGroup(
-            layout.createParallelGroup(GroupLayout.Alignment.LEADING)
-            .addGroup(layout.createSequentialGroup()
-                .addGap(454, 454, 454)
-                .addGroup(layout.createParallelGroup(GroupLayout.Alignment.LEADING)
-                    .addComponent(label2)
-                    .addComponent(label3))
-                .addGap(31, 31, 31)
-                .addGroup(layout.createParallelGroup(GroupLayout.Alignment.LEADING, false)
-                    .addComponent(tfieldAccount, GroupLayout.DEFAULT_SIZE, 268, Short.MAX_VALUE)
-                    .addComponent(pfieldPassword))
-                .addContainerGap(GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-            .addGroup(GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
-                .addContainerGap(509, Short.MAX_VALUE)
-                .addGroup(layout.createParallelGroup(GroupLayout.Alignment.LEADING)
-                    .addGroup(GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
-                        .addComponent(buttonLogin, GroupLayout.PREFERRED_SIZE, 102, GroupLayout.PREFERRED_SIZE)
-                        .addGap(504, 504, 504))
-                    .addGroup(GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
-                        .addComponent(label1)
-                        .addGap(421, 421, 421))))
-        );
-        layout.setVerticalGroup(
-            layout.createParallelGroup(GroupLayout.Alignment.LEADING)
-            .addGroup(layout.createSequentialGroup()
-                .addGap(274, 274, 274)
-                .addComponent(label1)
-                .addGap(28, 28, 28)
-                .addGroup(layout.createParallelGroup(GroupLayout.Alignment.BASELINE)
-                    .addComponent(label2)
-                    .addComponent(tfieldAccount, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE))
-                .addGap(18, 18, 18)
-                .addGroup(layout.createParallelGroup(GroupLayout.Alignment.BASELINE)
-                    .addComponent(label3)
-                    .addComponent(pfieldPassword, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE))
-                .addGap(18, 18, 18)
-                .addComponent(buttonLogin)
-                .addContainerGap(281, Short.MAX_VALUE))
-        );    	
+        setLayout(null);
+
+        add(label1);
+        label1.setBounds(509, 274, 270, 44);
+
+        add(label2);
+        label2.setBounds(454, 349, 69, 22);
+
+        add(tfieldAccount);
+        tfieldAccount.setBounds(565, 346, 268, 28);
+
+        add(label3);
+        label3.setBounds(454, 395, 80, 22);
+
+        add(buttonLogin);
+        buttonLogin.setBounds(594, 438, 102, 31);
+
+        add(pfieldPassword);
+        pfieldPassword.setBounds(565, 392, 268, 28);
     }
     
     private void initListeners() {

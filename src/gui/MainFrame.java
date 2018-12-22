@@ -9,7 +9,7 @@ public class MainFrame extends JFrame{
 	public final String LOGOUT_ERROR = "Logout failed";
 	public final String LOGIN_ERROR = "Invalid account or password";
 	
-	private final int WIDTH = 1200;
+	private final int WIDTH = 1250;
 	private final int HEIGHT = 880;
 	//private final int NO_PANEL = -1;
 	private final String APPLICATION_NAME = "Testing";
