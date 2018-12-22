@@ -493,10 +493,12 @@ public class CreatePanel extends JPanel implements Restorable{
     					relationship.setStart(startEntity);
     					relationship.setEnd(endEntity);
     					
-    					DatabaseHelper.getInstance().createRelationship(relationship, number);
     					if (source == CreatePanel.this.buttonRDelete) {
     						DatabaseHelper.getInstance().deleteRelationship(relationship, number);
-    					} 
+    					} else {
+    						DatabaseHelper.getInstance().createRelationship(relationship, number);
+    					}
+    						
     				}
     			}
     		}
