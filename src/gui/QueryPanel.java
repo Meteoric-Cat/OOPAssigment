@@ -7,6 +7,7 @@ import java.awt.event.MouseEvent;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.TimeUnit;
 
 import javax.swing.JButton;
 import javax.swing.JLabel;
@@ -19,12 +20,17 @@ import javax.swing.table.DefaultTableModel;
 
 import org.neo4j.driver.v1.Record;
 import org.neo4j.driver.v1.StatementResult;
+import org.neo4j.driver.v1.summary.ResultSummary;
 
 import helper.DatabaseHelper;
 import model.Query;
 
 public class QueryPanel extends JPanel implements Restorable{
 	//private final String LOGOUT_ERROR = "Logout failed";
+	private final String TEXT_EDITOR = "Notepad.exe";
+	private final String QUERY_LOG_PATH = "C:\\Users\\NgLuuNhat\\.Neo4jDesktop\\"
+			+ "neo4jDatabases\\database-ba032bcd-37ad-4eb0-b7ac-1d2942c35926\\"
+			+ "installation-3.4.1\\logs\\query.log";
 	
 	private Font fontButton = new Font("Tahoma", 0, 18);
 	private Font fontLabel = new Font("Tahoma", 0, 18);
@@ -57,7 +63,7 @@ public class QueryPanel extends JPanel implements Restorable{
     	this.buttonClear.setFont(fontButton);
     	this.buttonSend = new JButton("Send");
     	this.buttonSend.setFont(fontButton);
-    	this.buttonStatistics = new JButton("Statistics");
+    	this.buttonStatistics = new JButton("Query log");
     	this.buttonStatistics.setFont(fontButton);
     	this.buttonLogout = new JButton("Log out");
     	this.buttonLogout.setFont(fontButton);
@@ -169,6 +175,12 @@ public class QueryPanel extends JPanel implements Restorable{
     					
     					QueryPanel.this.tableResultModel.addRow(entityData.values().toArray());
     				}
+    				
+    				ResultSummary summary = result.consume();
+    				QueryPanel.this.labelQueryTime.setText(String.valueOf(
+    						((summary.resultAvailableAfter(TimeUnit.NANOSECONDS) + 
+    								summary.resultConsumedAfter(TimeUnit.NANOSECONDS))/1000000000)
+    						));
     			} 
     			if (source == QueryPanel.this.buttonLogout) {
     				//close current driver    				
@@ -186,7 +198,9 @@ public class QueryPanel extends JPanel implements Restorable{
     			if (source == QueryPanel.this.buttonClear) {
     				QueryPanel.this.restoreState();
     			}
-    			if (source == QueryPanel.this.buttonStatistics) {    				
+    			if (source == QueryPanel.this.buttonStatistics) {    
+    				ProcessBuilder builder = new ProcessBuilder(TEXT_EDITOR, QUERY_LOG_PATH);
+    				builder.start();
     			}
     		}    		
     	};
