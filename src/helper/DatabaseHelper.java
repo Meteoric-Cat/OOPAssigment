@@ -11,6 +11,7 @@ import org.neo4j.driver.v1.Record;
 import org.neo4j.driver.v1.Session;
 import org.neo4j.driver.v1.Statement;
 import org.neo4j.driver.v1.StatementResult;
+import org.neo4j.driver.v1.Value;
 import org.neo4j.driver.v1.Values;
 
 import model.Country;
@@ -88,39 +89,52 @@ public class DatabaseHelper {
 
 			if (entity.getType() == "PERSON") {
 				while (i != number) {
-					session.run("MERGE (n:" + entity.getType() + "{identifier:'" + idBase + (rootID + i) + "', label:'"
-							+ entity.getLabel() + "', description: '" + entity.getDescription() + "', origin: '"
-							+ entity.getOriginsAsString() + "', position:'" + ((Person) entity).getPosition() + "'})");
-					i++; // quantityCreatedEntity == i
+					String querry = "MERGE (n: " + entity.getType()
+							+ " {identifier: $identifier, label: $label, description: $description, origin: $origin, position: $position })";
+
+					session.run(querry,
+							Values.parameters("identifier", idBase + (rootID + i), "label", entity.getLabel(),
+									"description", entity.getDescription(), "origin", entity.getOriginsAsString(),
+									"position", ((Person) entity).getPosition()));
+					i++; // quantityCreatedEntity = i
 				}
 				JOptionPane.showMessageDialog(null, "Đã tạo thành công : " + i + " thực thể");
 
 			} else if (entity.getType() == "COUNTRY") {
 				while (i != number) {
-					session.run("MERGE (n:" + entity.getType() + "{identifier:'" + idBase + (rootID + i) + "', label:'"
-							+ entity.getLabel() + "', description: '" + entity.getDescription() + "', origin: '"
-							+ entity.getOriginsAsString() + "', continent: '" + ((Country) entity).getContinent()
-							+ "'})");
-					i++; // quantityCreatedEntity == i
+					String querry = "MERGE (n: " + entity.getType()
+							+ " {identifier: $identifier, label: $label, description: $description, origin: $origin, continent: $continent })";
+
+					session.run(querry,
+							Values.parameters("identifier", idBase + (rootID + i), "label", entity.getLabel(),
+									"description", entity.getDescription(), "origin", entity.getOriginsAsString(),
+									"continent", ((Country) entity).getContinent()));
+					i++; // quantityCreatedEntity = i
 				}
 				JOptionPane.showMessageDialog(null, "Đã tạo thành công : " + i + " thực thể");
 
 			} else if (entity.getType() == "ORGANIZATION") {
 				while (i != number) {
-					session.run("MERGE (n:" + entity.getType() + "{identifier:'" + idBase + (rootID + i) + "', label:'"
-							+ entity.getLabel() + "', description: '" + entity.getDescription() + "', origin: '"
-							+ entity.getOriginsAsString() + "', headquater: '"
-							+ ((Organization) entity).getHeadquarter() + "'})");
-					i++; // quantityCreatedEntity == i
+					String querry = "MERGE (n: " + entity.getType()
+							+ " {identifier: $identifier, label: $label, description: $description, origin: $origin, headquater: $headquater })";
+
+					session.run(querry,
+							Values.parameters("identifier", idBase + (rootID + i), "label", entity.getLabel(),
+									"description", entity.getDescription(), "origin", entity.getOriginsAsString(),
+									"headquater", ((Organization) entity).getHeadquarter()));
+					i++; // quantityCreatedEntity = i
 				}
 				JOptionPane.showMessageDialog(null, "Đã tạo thành công : " + i + " thực thể");
 
 			} else {
 				while (i != number) {
-					session.run("MERGE (n:" + entity.getType() + "{identifier:'" + idBase + (rootID + i) + "', label:'"
-							+ entity.getLabel() + "', description: '" + entity.getDescription() + "', origin: '"
-							+ entity.getOriginsAsString() + "'})");
-					i++; // quantityCreatedEntity == i
+					String querry = "MERGE (n: " + entity.getType()
+							+ " {identifier: $identifier, label: $label, description: $description, origin: $origin })";
+
+					session.run(querry,
+							Values.parameters("identifier", idBase + (rootID + i), "label", entity.getLabel(),
+									"description", entity.getDescription(), "origin", entity.getOriginsAsString()));
+					i++; // quantityCreatedEntity = i
 				}
 				JOptionPane.showMessageDialog(null, "Đã tạo thành công : " + i + " thực thể");
 			}
@@ -242,13 +256,18 @@ public class DatabaseHelper {
 			int i = 0; // đánh số ID định danh
 
 			while (i != number) {
-				session.run("MATCH (a:" + relationship.getStart().getType() + "), (b: "
-						+ relationship.getEnd().getType() + " )  " + "WHERE a.identifier = '" + idBaseStart
-						+ (rootIDStart + i) + "' AND b.identifier = '" + idBaseEnd + (rootIDEnd + i)
-						+ "' CREATE (a)-[r:" + relationship.getType() + "]->(b) ");
+				String query = "MATCH (a:" + relationship.getStart().getType() + "), (b:"
+						+ relationship.getEnd().getType()
+						+ ") WHERE a.identifier = $identifierA AND b.identifier = $identifierB CREATE (a)-[r: "
+						+ relationship.getType() + "]->(b) ";
+
+				session.run(query, Values.parameters("identifierA", idBaseStart + (rootIDStart + i), "identifierB",
+						idBaseEnd + (rootIDEnd + i)));
+
 				i++;
 			}
 			JOptionPane.showMessageDialog(null, "Đã tạo thành công " + i + " quan hệ");
+			
 		} catch (Exception e) {
 			JOptionPane.showMessageDialog(null, e.getMessage());
 		}
@@ -269,12 +288,17 @@ public class DatabaseHelper {
 			int i = 0; // đánh số ID định danh
 
 			while (i != number) {
-				session.run("MATCH (a:" + relationship.getStart().getType() + ") -[r]-> (b: "
-						+ relationship.getEnd().getType() + " )  " + "WHERE a.identifier = '" + idBaseStart
-						+ (rootIDStart + i) + "' AND b.identifier = '" + idBaseEnd + (rootIDEnd + i) + "' DELETE r ");
+				String query = "MATCH (a:" + relationship.getStart().getType() + ") -[r : " + relationship.getType()
+						+ "]-> (b:" + relationship.getEnd().getType()
+						+ ") WHERE a.identifier = $identifierA AND b.identifier = $identifierB DELETE r";
+
+				session.run(query, Values.parameters("identifierA", idBaseStart + (rootIDStart + i), "identifierB",
+						idBaseEnd + (rootIDEnd + i)));
+
 				i++;
 			}
 			JOptionPane.showMessageDialog(null, "Đã xóa thành công " + i + " quan hệ");
+			
 		} catch (Exception e) {
 			JOptionPane.showMessageDialog(null, e.getMessage());
 		}

@@ -341,6 +341,7 @@ public class CreatePanel extends JPanel implements Restorable{
         label11.setBounds(330, 490, 75, 22);
         add(label12);
         label12.setBounds(370, 520, 77, 22);
+        add(tfieldE1Identifier);
         tfieldE1Identifier.setBounds(450, 520, 242, 28);
         add(label13);
         label13.setBounds(740, 520, 45, 22);
@@ -479,7 +480,7 @@ public class CreatePanel extends JPanel implements Restorable{
     				if (number >= 0) {
     					EntityFactory factory = new EntityFactory();
     					MainEntity startEntity = factory.getEntity(
-    							CreatePanel.this.cboxType.getSelectedIndex(),
+    							CreatePanel.this.cboxE1Type.getSelectedIndex(),
     							CreatePanel.this.getEntityOrigins(),
     							CreatePanel.this.tfieldE1Identifier.getText(),
     							"",	"",	"",	"", "");
